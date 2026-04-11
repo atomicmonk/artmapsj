@@ -7,325 +7,207 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #111;
-      color: #eee;
-    }
-
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #111; color: #eee; }
     #header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1000;
-      background: rgba(10,10,10,0.92);
-      backdrop-filter: blur(6px);
-      padding: 0.75rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(10,10,10,0.92); backdrop-filter: blur(6px);
+      padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem;
       border-bottom: 1px solid #333;
     }
-
-    #header h1 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      color: #fff;
-      white-space: nowrap;
-    }
-
+    #header h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.05em; color: #fff; white-space: nowrap; }
     #header h1 span { color: #f97316; }
-
     #search {
-      flex: 1;
-      max-width: 400px;
-      padding: 0.5rem 0.75rem;
-      border-radius: 6px;
-      border: 1px solid #444;
-      background: #1a1a1a;
-      color: #eee;
-      font-size: 0.9rem;
+      flex: 1; max-width: 400px; padding: 0.5rem 0.75rem;
+      border-radius: 6px; border: 1px solid #444; background: #1a1a1a;
+      color: #eee; font-size: 0.9rem;
     }
-
     #search::placeholder { color: #666; }
-
     #locate-btn {
-      padding: 0.5rem 0.75rem;
-      background: #f97316;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-size: 0.85rem;
-      cursor: pointer;
-      white-space: nowrap;
+      padding: 0.5rem 0.75rem; background: #f97316; border: none;
+      border-radius: 6px; color: #fff; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
     }
-
     #locate-btn:hover { background: #ea6c0a; }
-
-    #map {
-      position: fixed;
-      top: 52px; left: 0; right: 0; bottom: 0;
-    }
-
+    #map { position: fixed; top: 52px; left: 0; right: 0; bottom: 0; }
     #count {
-      position: fixed;
-      bottom: 1rem;
-      left: 1rem;
-      z-index: 1000;
-      background: rgba(10,10,10,0.85);
-      padding: 0.4rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      color: #aaa;
-      border: 1px solid #333;
+      position: fixed; bottom: 1rem; left: 1rem; z-index: 1000;
+      background: rgba(10,10,10,0.85); padding: 0.4rem 0.75rem;
+      border-radius: 20px; font-size: 0.8rem; color: #aaa; border: 1px solid #333;
     }
-
-    /* Popup styles */
-    .leaflet-popup-content-wrapper {
-      background: #1a1a1a;
-      color: #eee;
-      border: 1px solid #333;
-      border-radius: 8px;
-    }
-
+    .leaflet-popup-content-wrapper { background: #1a1a1a; color: #eee; border: 1px solid #333; border-radius: 8px; }
     .leaflet-popup-tip { background: #1a1a1a; }
-
-    .popup-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 0.5rem;
-    }
-
-    .popup-row {
-      font-size: 0.82rem;
-      color: #aaa;
-      margin-bottom: 0.25rem;
-      line-height: 1.4;
-    }
-
+    .popup-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+    .popup-row { font-size: 0.82rem; color: #aaa; margin-bottom: 0.25rem; line-height: 1.4; }
     .popup-row strong { color: #ddd; }
-
-    .popup-row a {
-      color: #f97316;
-      text-decoration: none;
-    }
-
+    .popup-row a { color: #f97316; text-decoration: none; }
     .popup-row a:hover { text-decoration: underline; }
-
-    .popup-img {
-      width: 100%;
-      max-height: 160px;
-      object-fit: cover;
-      border-radius: 4px;
-      margin-bottom: 0.5rem;
-    }
-
     .tag {
-      display: inline-block;
-      font-size: 0.7rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: 10px;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem;
+      border-radius: 10px; margin-bottom: 0.5rem; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase;
     }
-
-    .tag-mural     { background: #7c3aed22; color: #a78bfa; border: 1px solid #7c3aed55; }
-    .tag-artbox    { background: #0369a122; color: #38bdf8; border: 1px solid #0369a155; }
-    .tag-street    { background: #15803d22; color: #4ade80; border: 1px solid #15803d55; }
+    .tag-artbox { background: #0369a122; color: #38bdf8; border: 1px solid #0369a155; }
+    .tag-mural  { background: #7c3aed22; color: #a78bfa; border: 1px solid #7c3aed55; }
+    .tag-street { background: #15803d22; color: #4ade80; border: 1px solid #15803d55; }
   </style>
 </head>
 <body>
-
 <div id="header">
   <h1>Art<span>Map</span>SJ</h1>
-  <input id="search" type="text" placeholder="Search by title, artist, or address…">
-  <button id="locate-btn">📍 Near Me</button>
+  <input id="search" type="text" placeholder="Search by title, artist, sponsor...">
+  <button id="locate-btn">&#128205; Near Me</button>
 </div>
-
 <div id="map"></div>
-<div id="count">Loading…</div>
-
+<div id="count">Loading...</div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+const map = L.map('map').setView([37.3382, -121.8863], 12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://carto.com/">CARTO</a>', maxZoom: 19
+}).addTo(map);
 
-  // ─── MAP SETUP ────────────────────────────────────────────────────────────
-  const map = L.map('map').setView([37.3382, -121.8863], 13);
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-    maxZoom: 19
-  }).addTo(map);
-
-  // ─── MARKER COLORS BY TYPE ────────────────────────────────────────────────
-  function markerIcon(type) {
-    const colors = {
-      'Mural':       '#a78bfa',
-      'Art Box':     '#38bdf8',
-      'Street Art':  '#4ade80'
-    };
-    const color = colors[type] || '#f97316';
-    return L.divIcon({
-      className: '',
-      html: `<div style="
-        width:14px;height:14px;
-        background:${color};
-        border:2px solid #fff;
-        border-radius:50%;
-        box-shadow:0 0 6px ${color}88;
-      "></div>`,
-      iconSize: [14, 14],
-      iconAnchor: [7, 7],
-      popupAnchor: [0, -10]
-    });
-  }
-
-  // ─── SAMPLE DATA (replace with Google Sheets CSV fetch below) ────────────
-  const sampleData = [
-    {
-      title: "The Garden of Cosmic Speculation",
-      artist: "Various Artists",
-      date: "2018",
-      sponsor: "City of San Jose",
-      address: "200 E Santa Clara St, San Jose, CA",
-      lat: 37.3361,
-      lng: -121.8864,
-      type: "Mural",
-      image: "",
-      notes: "Sample entry — replace with real data"
-    },
-    {
-      title: "Art Box #42",
-      artist: "Maria Lopez",
-      date: "2021",
-      sponsor: "San Jose Arts Commission",
-      address: "1st St & Santa Clara St, San Jose, CA",
-      lat: 37.3388,
-      lng: -121.8897,
-      type: "Art Box",
-      image: "",
-      notes: ""
-    },
-    {
-      title: "Roots & Wings",
-      artist: "James Chen",
-      date: "2020",
-      sponsor: "MACLA",
-      address: "510 S 1st St, San Jose, CA",
-      lat: 37.3318,
-      lng: -121.8851,
-      type: "Street Art",
-      image: "",
-      notes: ""
-    }
-  ];
-
-  // ─── GOOGLE SHEETS CSV FETCH ──────────────────────────────────────────────
-  // When your sheet is ready:
-  // 1. File → Share → Publish to web → CSV
-  // 2. Replace SHEET_ID below and uncomment this block
-  //
-  // const SHEET_ID = 'YOUR_SHEET_ID_HERE';
-  // const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/pub?output=csv`;
-  //
-  // fetch(CSV_URL)
-  //   .then(r => r.text())
-  //   .then(csv => {
-  //     const rows = parseCSV(csv);
-  //     loadMarkers(rows);
-  //   });
-
-  // ─── CSV PARSER ───────────────────────────────────────────────────────────
-  function parseCSV(csv) {
-    const [headerLine, ...lines] = csv.trim().split('\n');
-    const headers = headerLine.split(',').map(h => h.trim().toLowerCase());
-    return lines.map(line => {
-      const vals = line.split(',');
-      const obj = {};
-      headers.forEach((h, i) => obj[h] = (vals[i] || '').trim().replace(/^"|"$/g, ''));
-      return obj;
-    });
-  }
-
-  // ─── LOAD MARKERS ─────────────────────────────────────────────────────────
-  let allMarkers = [];
-
-  function buildPopup(d) {
-    const tagClass = { 'Mural': 'tag-mural', 'Art Box': 'tag-artbox', 'Street Art': 'tag-street' };
-    return `
-      ${d.image ? `<img class="popup-img" src="${d.image}" alt="${d.title}">` : ''}
-      <div class="popup-title">${d.title || 'Untitled'}</div>
-      <span class="tag ${tagClass[d.type] || ''}">${d.type || 'Art'}</span>
-      ${d.artist   ? `<div class="popup-row"><strong>Artist:</strong> ${d.artist}</div>` : ''}
-      ${d.date     ? `<div class="popup-row"><strong>Year:</strong> ${d.date}</div>` : ''}
-      ${d.sponsor  ? `<div class="popup-row"><strong>Sponsor:</strong> ${d.sponsor}</div>` : ''}
-      ${d.address  ? `<div class="popup-row"><strong>Address:</strong>
-        <a href="https://maps.google.com/?q=${encodeURIComponent(d.address)}" target="_blank">${d.address}</a>
-      </div>` : ''}
-      ${d.notes    ? `<div class="popup-row">${d.notes}</div>` : ''}
-    `;
-  }
-
-  function loadMarkers(data) {
-    allMarkers.forEach(m => map.removeLayer(m.marker));
-    allMarkers = [];
-
-    data.forEach(d => {
-      const lat = parseFloat(d.lat);
-      const lng = parseFloat(d.lng);
-      if (isNaN(lat) || isNaN(lng)) return;
-
-      const marker = L.marker([lat, lng], { icon: markerIcon(d.type) })
-        .addTo(map)
-        .bindPopup(buildPopup(d), { maxWidth: 280 });
-
-      allMarkers.push({ marker, data: d });
-    });
-
-    document.getElementById('count').textContent =
-      `${allMarkers.length} artwork${allMarkers.length !== 1 ? 's' : ''} on map`;
-  }
-
-  // Load sample data on start
-  loadMarkers(sampleData);
-
-  // ─── SEARCH ───────────────────────────────────────────────────────────────
-  document.getElementById('search').addEventListener('input', function () {
-    const q = this.value.toLowerCase().trim();
-    let visible = 0;
-
-    allMarkers.forEach(({ marker, data: d }) => {
-      const match = !q
-        || (d.title   || '').toLowerCase().includes(q)
-        || (d.artist  || '').toLowerCase().includes(q)
-        || (d.address || '').toLowerCase().includes(q)
-        || (d.type    || '').toLowerCase().includes(q);
-
-      if (match) {
-        marker.addTo(map);
-        visible++;
-      } else {
-        map.removeLayer(marker);
-      }
-    });
-
-    document.getElementById('count').textContent =
-      q ? `${visible} result${visible !== 1 ? 's' : ''} for "${q}"` :
-          `${allMarkers.length} artworks on map`;
+function markerIcon(type) {
+  const colors = { 'Mural': '#a78bfa', 'Art Box': '#38bdf8', 'Street Art': '#4ade80' };
+  const color = colors[type] || '#38bdf8';
+  return L.divIcon({
+    className: '',
+    html: '<div style="width:12px;height:12px;background:' + color + ';border:2px solid #fff;border-radius:50%;box-shadow:0 0 6px ' + color + '88;"></div>',
+    iconSize: [12, 12], iconAnchor: [6, 6], popupAnchor: [0, -8]
   });
+}
 
-  // ─── LOCATE ME ────────────────────────────────────────────────────────────
-  document.getElementById('locate-btn').addEventListener('click', function () {
-    map.locate({ setView: true, maxZoom: 16 });
+const data = [
+  {t:"Rosemary Gardens Park",a:"Sandi Billingsley",s:"Rosemary Gardens Neighborhood Association",n:"Painted on a bocce-ball equipment container in the center of the park.",lat:37.362449,lng:-121.915584},
+  {t:"N First St/Burton",a:"David Mejia",s:"Hyde Park Neighborhood Association",n:"Art deco feel featuring the lovely Sycamore trees nearby.",lat:37.357145,lng:-121.906013},
+  {t:"N First St/Jackson",a:"Lea Joyeux",s:"Anonymous",n:"Entrance to Japantown!",lat:37.347149,lng:-121.898396},
+  {t:"N 7th/Santa Clara Street",a:"Michael Borja",s:"Horace Mann Neighborhood Association",n:"Located across the street from Horace Mann school.",lat:37.339592,lng:-121.884127},
+  {t:"21st/Taylor Street",a:"Fernando Amaro, Jr.",s:"Anonymous",n:"Urban/edgy vibe. Note: The art was vandalized/removed as of Jan. 2013.",lat:37.359038,lng:-121.880178},
+  {t:"17th/Julian",a:"Shove Mink and Michael Borja",s:"Luna Park Business Association",n:"Two boxes; a second artist painted the tall thin box in a similar style after the original artist moved.",lat:37.348087,lng:-121.877131},
+  {t:"Hillsdale/Narvaez",a:"Karon Fleming",s:"Anonymous",n:"Adds vibrancy and color to the area.",lat:37.280182,lng:-121.864364},
+  {t:"Hillsdale/Vista Park",a:"Murphy Adams",s:"Anonymous",n:"Dog walkers and fitness buffs heading up Communications Hill enjoy the theme.",lat:37.279926,lng:-121.854644},
+  {t:"Lincoln/Pine",a:"Flo de Bretagne",s:"Councilmember Pierluigi Oliverio",n:"The image of the cat has a special meaning to the councilmember.",lat:37.298543,lng:-121.893514},
+  {t:"Minnesota/Lincoln",a:"Vanessa Stafford",s:"Councilmember Pierluigi Oliverio",n:"Depicts the fun festivities often in play in this area.",lat:37.303621,lng:-121.89757},
+  {t:"Berryesa/Piedmont",a:"Isabel Quinonez",s:"Berryesa Citizens Advisory Council",n:"Themes of the area: the former Olivera Egg Ranch, orchards, a nearby park, and local creeks.",lat:37.39621,lng:-121.845546},
+  {t:"Taylor Street just before 5th",a:"Sam Rodriguez",s:"Japantown Business Association",n:"Dolls created to look like traditional Kokeshi Dolls.",lat:37.351124,lng:-121.896744},
+  {t:"4th Street/Jackson",a:"Orly Loquiao",s:"Japantown Business Association",n:"Many people pose for pictures in front of these boxes.",lat:37.348104,lng:-121.895585},
+  {t:"Backesto Park: Empire/13th",a:"Antonio Castro",s:"Anonymous",n:"2 boxes in Backesto Park. The sponsor is a huge soccer fan.",lat:37.351072,lng:-121.88417},
+  {t:"Backesto Park: Empire and 15th",a:"Antonio Castro",s:"Anonymous",n:"Located on a pole with a large siren at the top.",lat:37.351601,lng:-121.883247},
+  {t:"The Alameda at Race St",a:"Troy Simms",s:"Shasta Hanchett Park Neighborhood Association",n:"Depicts the scenic beauty of the historic Alameda.",lat:37.331744,lng:-121.91185},
+  {t:"Hedding/13th Street",a:"Sara Tomasello",s:"Luna Park Business Association",n:"This area once boasted Luna Park, a large amusement park created by the San Jose Street Car Company.",lat:37.359669,lng:-121.890671},
+  {t:"Taylor at Coleman",a:"Jim Fonseca",s:"Ladies Loving All Art",n:"In close proximity to the San Jose Heritage Rose Garden.",lat:37.342321,lng:-121.910552},
+  {t:"Dana and Naglee",a:"Lacey Bryant",s:"Councilmember Pierluigi Oliverio",n:"Surrounded by places with flowers and nature's pollinators.",lat:37.331778,lng:-121.926334},
+  {t:"Bird/Coe",a:"Scott Willis",s:"Councilmember Pierluigi Oliverio",n:"Life scenes with a twist. Palm trees reflect those of Palm Haven in the Willow Glen area.",lat:37.315465,lng:-121.897495},
+  {t:"Julian/Market",a:"Erik Gonzalez",s:"Anonymous",n:"A splash of color in a yet-to-be-developed area.",lat:37.339814,lng:-121.895971},
+  {t:"Bird/Minnesota",a:"Chris Hofer Borror",s:"Councilmember Pierluigi Oliverio",n:"Two boxes, same theme. Some of the birds on the tall/thin box seem a bit nervous -- check it out!",lat:37.306829,lng:-121.891422},
+  {t:"Santa Clara at Almaden Blvd",a:"Jane Ferguson",s:"San Jose Downtown Residents Association",n:"Blue vases reflect the downtown skyline of the tall buildings surrounding the art box.",lat:37.333877,lng:-121.894963},
+  {t:"Hedding at The Alameda",a:"Michael Foley",s:"College Park Neighborhood Association / MCM Diversified",n:"Located in a historic area, reflected in the art.",lat:37.341144,lng:-121.922879},
+  {t:"Berryesa at Summerdale",a:"Valerie Runningwolf",s:"Al Keene",n:"Features soaring birds in a detailed design.",lat:37.390933,lng:-121.853034},
+  {t:"Market and W St. John St",a:"Kimy Martinez",s:"Ladies Loving All Art",n:"Depicts scenes from the Valley of Hearts Delight and the Guadalupe River.",lat:37.336982,lng:-121.892881},
+  {t:"Berryesa at Sandstone",a:"Rene Lorraine",s:"Al Keene",n:"Images of people engaging in play with paper airplanes greet drivers.",lat:37.388402,lng:-121.8593},
+  {t:"Lincoln Ave and Willow",a:"Micah (Groovepainter)",s:"Councilmember Pierluigi Oliverio",n:"A busy corner enhanced with the energy of musicians.",lat:37.308229,lng:-121.900434},
+  {t:"Little Italy - N Almaden at W Julian",a:"Kori Thompson",s:"Little Italy San Jose Foundation",n:"The sides tell the story of hard work, hope, and making a new home in America.",lat:37.336338,lng:-121.898562},
+  {t:"Little Italy - Julian at Guadalupe Park",a:"Steven Suiter",s:"Little Italy San Jose Foundation",n:"Captures the Little Italy story being built brick by brick.",lat:37.336103,lng:-121.899544},
+  {t:"Park at Hanchett",a:"John Kurtyka",s:"Council member Pierluigi Oliverio",n:"Adds color and common everyday shapes in unexpected ways.",lat:37.329423,lng:-121.918116},
+  {t:"Curtner at Lincoln",a:"Amine Rastgar",s:"Council member Pierluigi Oliverio",n:"Three boxes on a busy Willow Glen corner with lots of color.",lat:37.289453,lng:-121.887946},
+  {t:"Booksin at Curtner",a:"Jen Norton",s:"Council member Pierluigi Oliverio",n:"Neighborhood scenes and lots of flowers.",lat:37.284399,lng:-121.904039},
+  {t:"Park at Naglee",a:"Michelle Waters",s:"Council member Pierluigi Oliverio",n:"Reflects the Rosicrucian Museum directly across the street.",lat:37.333621,lng:-121.924038},
+  {t:"Meridian at Camden",a:"Laurus Myth",s:"Council member Nancy Pyle",n:"Reflects the nature of Almaden Meadows Park.",lat:37.22158,lng:-121.882882},
+  {t:"Taylor at 7th Street",a:"Yurika Chiba",s:"Japantown Business Association",n:"Features Taiko cats!",lat:37.352113,lng:-121.893557},
+  {t:"The Alameda at Sunol",a:"Allison Torneros",s:"Council member Pierluigi Oliverio",n:"Lots of color on an up-and-coming, art-loving street.",lat:37.331522,lng:-121.906979},
+  {t:"Alvin at Tully",a:"Bernadette Cooper",s:"West Evergreen Neighborhood Association",n:"Family friendly, colorful theme with nature elements.",lat:37.319697,lng:-121.827961},
+  {t:"3rd and Jackson",a:"Taki Kitamura",s:"Japantown Business Association",n:"Depicts the story of the Koi fish that through hard work turns into a mighty dragon.",lat:37.347848,lng:-121.8961},
+  {t:"Meridian Ave & Fruitdale Ave",a:"Andrew Agutos",s:"Council member Pierluigi Oliverio",n:"Color for commuters at a very busy intersection.",lat:37.310851,lng:-121.91399},
+  {t:"N 10th St & E Empire St",a:"Lisa Mejia",s:"Alex and Gloria Cerul",n:"Colorful addition to a busy neighborhood corner.",lat:37.349321,lng:-121.887442},
+  {t:"Branham Ln at Pearl Ave",a:"Frances Marin",s:"Erikson Neighborhood Association",n:"Site of the former Robertsville Station -- a unique perspective inside the old general store looking out on the Valley of Hearts Delight.",lat:37.265695,lng:-121.866072},
+  {t:"N Monroe St & Forest Ave",a:"Rajani Balaram",s:"Council member Pierluigi Oliverio",n:"Poppy-filled art box in an island at the entrance of a busy shopping mall.",lat:37.327048,lng:-121.94332},
+  {t:"W Taylor St & N San Pedro St",a:"Albert Almondia",s:"Linda and John Henderson",n:"Depicts its close proximity to planes, bikes, cars, and the Guadalupe.",lat:37.347866,lng:-121.902291},
+  {t:"Alum Rock Ave & N White Rd",a:"Christine Benjamin",s:"Friends of the Alum Rock Library",n:"Books are the prominent theme, directly in front of the Alum Rock Library. A comet nods to the mascot of the high school across the street.",lat:37.365647,lng:-121.827993},
+  {t:"NW corner N 1st St & Rankin Ave",a:"Rolando Free",s:"Friends of Ryland Pool",n:"Titled 'Dutchboy Liberated.' Near Rotary Ryland Pool with historic Batchelder tiles (1927). The artist brought the dutchboy to life, scampering happily -- he even has a girlfriend!",lat:37.345998,lng:-121.898074},
+  {t:"S Bascom Ave & Parkmoor Ave",a:"Tulio Flores",s:"Buena Vista Neighborhood Association",n:"Features bikers and birdies.",lat:37.317609,lng:-121.931932},
+  {t:"W San Carlos St & Buena Vista Ave",a:"John Cloud",s:"Buena Vista Neighborhood Association",n:"Beautiful creatures of nature on two art boxes.",lat:37.323221,lng:-121.918969},
+  {t:"Pearl Ave & Kozera Dr",a:"Leah Jakusovszky",s:"Erikson Neighborhood Association",n:"Vibrant box with lots of color for pedestrians.",lat:37.26129,lng:-121.863998},
+  {t:"Lincoln Ave & Malone Rd",a:"Sara Mordecai",s:"Council member Pierluigi Oliverio",n:"A goddess pours blessings onto San Jose public structures.",lat:37.293448,lng:-121.890136},
+  {t:"Park Ave & Delmas Ave",a:"Jorge Juarez",s:"Delmas Park Neighborhood Association",n:"When the Jacaranda Trees bloom, their colors match this vibrant art box.",lat:37.328764,lng:-121.896583},
+  {t:"Park Ave & Sandringham Way",a:"Carrie Lyons",s:"Council member Pierluigi Oliverio",n:"The artist enlisted her classroom to identify native animals to paint.",lat:37.332225,lng:-121.921975},
+  {t:"S 3rd St & E Reed St",a:"April Gee",s:"District Attorney Jeff Rosen",n:"Located by Notre Dame High School, reflective of the learning that occurs there.",lat:37.32808,lng:-121.881694},
+  {t:"The Alameda & Newhall St",a:"Sonya Paz",s:"Family members in the Newhall Neighborhood",n:"Vivid colors and bright flowers greet drivers on this stretch of The Alameda.",lat:37.343466,lng:-121.92858},
+  {t:"S Bascom Ave & Scott St",a:"Mireya Villanueva",s:"Buena Vista Neighborhood Association and Burbank Community Association",n:"Kaleidoscopic.",lat:37.319841,lng:-121.93177},
+  {t:"Meridian Ave & Parkmoor Ave",a:"Freddie Vega",s:"Buena Vista Neighborhood Association",n:"A hummingbird watches the traffic go by.",lat:37.316543,lng:-121.914304},
+  {t:"Curtner Ave & Cottle Ave",a:"Alex Perez",s:"Council member Pierluigi Oliverio",n:"Wildlife living amongst the hustle and bustle of humans.",lat:37.287718,lng:-121.893717},
+  {t:"Leigh Ave & Parkmoor Ave",a:"Magic Sean Gil",s:"Buena Vista Neighborhood Association",n:"Busy and colorful.",lat:37.317296,lng:-121.923808},
+  {t:"Meridian Ave & Dry Creek Rd",a:"Erikka Hugger",s:"Council member Pierluigi Oliverio",n:"Bees and sunny sunflowers.",lat:37.286697,lng:-121.913556},
+  {t:"The Alameda & Lenzen Ave",a:"Madhuri Krishna",s:"Mary Ann May-Pumphrey",n:"Women, girls, and education depicted on this art box.",lat:37.333256,lng:-121.91402},
+  {t:"Auzerais Ave & Delmas Ave",a:"Kimberly Christman",s:"Delmas Park Neighborhood Association",n:"Critters native to California.",lat:37.326029,lng:-121.894567},
+  {t:"Park Ave & Race St",a:"Suhita Shirodkar",s:"Hanchett Park Heritage Project",n:"Historic pillars which once graced the neighborhood incorporated with native wildlife.",lat:37.326014,lng:-121.911581},
+  {t:"Monterey Rd & Branham Ln E",a:"Tony Baran",s:"Havens Neighbors and Council member Ash Kalra",n:"Critters native to the area.",lat:37.267534,lng:-121.821828},
+  {t:"The Alameda & W Taylor St",a:"Kori Thompson",s:"The Alameda Business Association",n:"Gives a nod to the canneries which were once around this location.",lat:37.3369836,lng:-121.9184564},
+  {t:"Saratoga Ave & Doyle Rd",a:"Devika Keskar",s:"Anonymous",n:"Depicts flowers in vivid colors.",lat:37.3028701,lng:-121.9801395},
+  {t:"Saratoga and Payne",a:"Schwartz",s:"The Horwedal Family",n:"Depicts a school that was once in this location.",lat:37.3009474,lng:-121.9817301},
+  {t:"The Alameda & W Julian St",a:"Tulio Flores",s:"Shasta Hanchett Park Neighborhood Association and La Dolce Velo",n:"A bike theme prevails.",lat:37.3321257,lng:-121.9127659},
+  {t:"W Julian St & Stockton Ave",a:"Marcus Cota",s:"Billy DeFrank Center",n:"The detail on this art box has to be seen -- no words to describe.",lat:37.3337664,lng:-121.9058788},
+  {t:"N 11th St & Jackson St",a:"Amelia Eaton",s:"Luna Park Arts Foundation",n:"",lat:37.3519637,lng:-121.8880433},
+  {t:"Minnesota Ave & Hicks Ave",a:"Shawna Gonzales",s:"Tina Franklin",n:"A view of the Willow Glen branch library.",lat:37.3010427,lng:-121.9056774},
+  {t:"Coyote Road and Blossom Hill",a:"Claudia Cornish",s:"Coyote Creek Neighborhood Association",n:"Depicts local native wildlife.",lat:37.2574132,lng:-121.7932105},
+  {t:"N Market St & W St James St",a:"David Mejia",s:"Bonnie Ross",n:"Courtroom scenes.",lat:37.3384161,lng:-121.8942555},
+  {t:"S 10th St & E San Antonio St",a:"Chris Borror",s:"Naglee Park Neighborhood Association",n:"In front of San Jose State University.",lat:37.3374361,lng:-121.8786019},
+  {t:"Fruitdale Ave & Sherman Oaks Dr",a:"Vanessa Callanta",s:"Michael and Ramona Snyder",n:"In front of Sherman Oaks school.",lat:37.3106974,lng:-121.9271111},
+  {t:"E Santa Clara St & S 13th St",a:"Mona Lemon",s:"Naglee Park Neighborhood Association",n:"Native American Indian theme.",lat:37.342089,lng:-121.8781018},
+  {t:"Airport Pkwy & Gateway Pl",a:"Jennifer Hart",s:"Ladies Loving All Art",n:"Airport theme.",lat:37.3703364,lng:-121.9213927},
+  {t:"E San Fernando St & S 9th St",a:"Elizabeth Montelongo",s:"Anonymous",n:"On San Jose State Campus.",lat:37.3383464,lng:-121.8807434},
+  {t:"Hamilton Ave & Pine Ave & Hicks Ave",a:"Jen Norton",s:"Vonya Armanino",n:"Reminds us of the cherry orchards which once stood here.",lat:37.2934302,lng:-121.9049307},
+  {t:"Bird and Willow",a:"Diana Hartman",s:"Denny North",n:"",lat:37.310673,lng:-121.8956795},
+  {t:"Lincoln Ave - Financial Center",a:"Diana Hartman",s:"Council member Pierluigi Oliverio",n:"Cats!",lat:37.3062534,lng:-121.8995869}
+];
+
+let allMarkers = [];
+
+function buildPopup(d) {
+  return '<div class="popup-title">' + d.t + '</div>' +
+    '<span class="tag tag-artbox">Art Box</span>' +
+    (d.a ? '<div class="popup-row"><strong>Artist:</strong> ' + d.a + '</div>' : '') +
+    (d.s ? '<div class="popup-row"><strong>Sponsor:</strong> ' + d.s + '</div>' : '') +
+    (d.n ? '<div class="popup-row">' + d.n + '</div>' : '') +
+    '<div class="popup-row" style="margin-top:0.5rem"><a href="https://maps.google.com/?q=' + encodeURIComponent(d.t + ' San Jose CA') + '" target="_blank">View on Google Maps &#8599;</a></div>';
+}
+
+function loadMarkers(dataset) {
+  allMarkers.forEach(function(m) { map.removeLayer(m.marker); });
+  allMarkers = [];
+  dataset.forEach(function(d) {
+    var marker = L.marker([d.lat, d.lng], { icon: markerIcon('Art Box') })
+      .addTo(map)
+      .bindPopup(buildPopup(d), { maxWidth: 300 });
+    allMarkers.push({ marker: marker, data: d });
   });
+  document.getElementById('count').textContent = allMarkers.length + ' art boxes on map';
+}
 
-  map.on('locationerror', function () {
-    alert('Could not get your location. Please allow location access and try again.');
+loadMarkers(data);
+
+document.getElementById('search').addEventListener('input', function() {
+  var q = this.value.toLowerCase().trim();
+  var visible = 0;
+  allMarkers.forEach(function(item) {
+    var d = item.data;
+    var match = !q
+      || d.t.toLowerCase().includes(q)
+      || d.a.toLowerCase().includes(q)
+      || d.s.toLowerCase().includes(q)
+      || d.n.toLowerCase().includes(q);
+    if (match) { item.marker.addTo(map); visible++; }
+    else { map.removeLayer(item.marker); }
   });
+  document.getElementById('count').textContent = q
+    ? visible + ' result' + (visible !== 1 ? 's' : '') + ' for "' + q + '"'
+    : allMarkers.length + ' art boxes on map';
+});
 
+document.getElementById('locate-btn').addEventListener('click', function() {
+  map.locate({ setView: true, maxZoom: 16 });
+});
+
+map.on('locationerror', function() {
+  alert('Could not get your location. Please allow location access and try again.');
+});
 </script>
 </body>
 </html>
